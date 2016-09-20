@@ -64,6 +64,27 @@ Function ConvertTo-URLEncodedQueryStringParameterString {
     }
 }
 
+Function ConvertFrom-URLEncodedQueryStringParameterString {
+    param (
+        [Parameter(ValueFromPipeline)]$PipelineInput
+    )
+    process {
+        $KeyValuePairs = $PipelineInput -split "&"
+        $HashTable = [Ordered]@{}
+        ForEach ($KeyValuePair in $KeyValuePairs) {
+            $KeyAndValue = $KeyValuePair -split "="
+            $HashTable.add(
+                [Uri]::UnescapeDataString($KeyAndValue[0]) , [Uri]::UnescapeDataString($KeyAndValue[1])
+            )
+        }
+
+        [PSCustomObject]$HashTable
+    }
+}
+
+
+
+
 Function New-XMLElement {
     [cmdletbinding(DefaultParameterSetName='InnerElements')]
     Param (
