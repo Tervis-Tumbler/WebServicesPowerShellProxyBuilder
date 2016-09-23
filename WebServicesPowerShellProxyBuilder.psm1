@@ -95,13 +95,15 @@ Function New-XMLElement {
         $Attributes,
         [Parameter(ParameterSetName="InnerElements")]$InnerElements,
         [Parameter(ParameterSetName="InnerText")]$InnerText,
-        [Switch]$OutputAsString
+        [Switch]$AsString
     )
     
     [xml]$xml=""
     $Element = $xml.CreateElement($Name)
-    foreach ($Key in $Attributes.Keys) {
-        $Element.SetAttribute($Key,$Attributes[$Key]) | Out-Null
+
+    $Attributes = [PSCustomObject]$Attributes
+    foreach ($Property in $Attributes.psobject.Properties) {
+        $Element.SetAttribute($Property.Name,$Property.Value) | Out-Null
     }
 
     if ($InnerText) {
@@ -115,7 +117,7 @@ Function New-XMLElement {
     }
 
     Write-Verbose $Element.OuterXml
-    if ($OutputAsString) {
+    if ($AsString) {
         $Element.OuterXml
     } else {
         $Element
@@ -128,7 +130,7 @@ Function New-XMLDocument {
         [Parameter(Mandatory)][String]$Version,
         [Parameter(Mandatory)][String]$Encoding,
         $InnerElements,
-        [Switch]$OutputAsString
+        [Switch]$AsString
 
     )
     
@@ -141,10 +143,18 @@ Function New-XMLDocument {
     }
 
     Write-Verbose $xml.OuterXml
-    if ($OutputAsString) {
+    if ($AsString) {
         $xml.OuterXml
     } else {
         $xml
     }
+}
 
+Function ConvertFrom-PSBoundParameters {
+    param (
+        [Parameter(ValueFromPipeline)]$ValueFromPipeline
+    )
+    process {
+        [pscustomobject]([ordered]@{}+$ValueFromPipeline)
+    }
 }
