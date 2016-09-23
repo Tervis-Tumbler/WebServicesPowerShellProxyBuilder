@@ -14,12 +14,14 @@
     }
 }
 
+
 Function Set-WSRootAPIHostName {
     param (
         $RootAPIHostName
     )
     [Environment]::SetEnvironmentVariable( "$($PSModuleName)RootAPIHostName", $RootAPIURL, "User" )
 }
+
 
 function Get-WSRootAPIHostName {
     param (
@@ -28,6 +30,7 @@ function Get-WSRootAPIHostName {
     Invoke-Expression "`$env:$($PSModuleName)RootAPIHostName"
 }
 
+
 function Invoke-WSAPIFunction {
     param (
         $HttpMethod
@@ -35,6 +38,7 @@ function Invoke-WSAPIFunction {
     )
     
 }
+
 
 Function ConvertTo-URLEncodedQueryStringParameterString {
     param (
@@ -64,6 +68,7 @@ Function ConvertTo-URLEncodedQueryStringParameterString {
     }
 }
 
+
 Function ConvertFrom-URLEncodedQueryStringParameterString {
     param (
         [Parameter(ValueFromPipeline)]$PipelineInput
@@ -83,15 +88,14 @@ Function ConvertFrom-URLEncodedQueryStringParameterString {
 }
 
 
-
-
 Function New-XMLElement {
     [cmdletbinding(DefaultParameterSetName='InnerElements')]
     Param (
         $Name,
         $Attributes,
         [Parameter(ParameterSetName="InnerElements")]$InnerElements,
-        [Parameter(ParameterSetName="InnerText")]$InnerText
+        [Parameter(ParameterSetName="InnerText")]$InnerText,
+        [Switch]$OutputAsString
     )
     
     [xml]$xml=""
@@ -111,18 +115,25 @@ Function New-XMLElement {
     }
 
     Write-Verbose $Element.OuterXml
-    $Element
+    if ($OutputAsString) {
+        $Element.OuterXml
+    } else {
+        $Element
+    }
 }
+
 
 Function New-XMLDocument {
     Param (
-        [Parameter(Mandatory)]$Version,
-        [Parameter(Mandatory)]$Encoding,
-        $InnerElements
+        [Parameter(Mandatory)][String]$Version,
+        [Parameter(Mandatory)][String]$Encoding,
+        $InnerElements,
+        [Switch]$OutputAsString
+
     )
     
     [xml]$xml=""
-    $xml.Insertbefore($xml.CreateXmlDeclaration("1.0","UTF-8",""), $xml.DocumentElement ) | Out-Null
+    $xml.Insertbefore($xml.CreateXmlDeclaration($Version,$Encoding,""), $xml.DocumentElement ) | Out-Null
     if ($InnerElements) { 
         ForEach ($InnerElement in $InnerElements) {
             $xml.AppendChild($xml.ImportNode($InnerElement, $true)) | Out-Null
@@ -130,5 +141,10 @@ Function New-XMLDocument {
     }
 
     Write-Verbose $xml.OuterXml
-    $xml
+    if ($OutputAsString) {
+        $xml.OuterXml
+    } else {
+        $xml
+    }
+
 }
