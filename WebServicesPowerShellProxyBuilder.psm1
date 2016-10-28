@@ -177,7 +177,24 @@ function Get-CurrentCertificatePolicy {
 
 function Set-CertificatePolicy {
     param (
-        $CertificatePolicy
-    )
+        [Parameter(Mandatory,ParameterSetName="CertificatePolicy")]$CertificatePolicy,
+        [Parameter(Mandatory,ParameterSetName="TrustAllCerts")][switch]$TrustAllCerts
+    )    
+
+    if ($TrustAllCerts) {
+        add-type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+"@
+        $CertificatePolicy = New-Object TrustAllCertsPolicy
+    }
+
     [System.Net.ServicePointManager]::CertificatePolicy = $CertificatePolicy
 }
