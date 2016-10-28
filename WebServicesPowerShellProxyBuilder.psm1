@@ -1,4 +1,4 @@
-﻿Function Get-WSRootAPIURL {
+﻿function Get-WSRootAPIURL {
     param (
         [Parameter(Mandatory)]$DefaultWSRootAPIURL,
         [Parameter(Mandatory)]$PSModuleName
@@ -15,7 +15,7 @@
 }
 
 
-Function Set-WSRootAPIHostName {
+function Set-WSRootAPIHostName {
     param (
         $RootAPIHostName
     )
@@ -31,7 +31,7 @@ function Get-WSRootAPIHostName {
 }
 
 
-function Invoke-WSAPIFunction {
+function Invoke-WSAPIfunction {
     param (
         $HttpMethod
 
@@ -40,7 +40,7 @@ function Invoke-WSAPIFunction {
 }
 
 
-Function ConvertTo-URLEncodedQueryStringParameterString {
+function ConvertTo-URLEncodedQueryStringParameterString {
     param (
         [Parameter(ValueFromPipeline)]$PipelineInput,
         [Switch]$MakeParameterNamesLowerCase
@@ -69,7 +69,7 @@ Function ConvertTo-URLEncodedQueryStringParameterString {
 }
 
 
-Function ConvertFrom-URLEncodedQueryStringParameterString {
+function ConvertFrom-URLEncodedQueryStringParameterString {
     param (
         [Parameter(ValueFromPipeline)]$PipelineInput
     )
@@ -88,7 +88,7 @@ Function ConvertFrom-URLEncodedQueryStringParameterString {
 }
 
 
-Function New-XMLElement {
+function New-XMLElement {
     [cmdletbinding(DefaultParameterSetName='InnerElements')]
     Param (
         $Name,
@@ -125,7 +125,7 @@ Function New-XMLElement {
 }
 
 
-Function New-XMLDocument {
+function New-XMLDocument {
     Param (
         [Parameter(Mandatory)][String]$Version,
         [Parameter(Mandatory)][String]$Encoding,
@@ -150,11 +150,34 @@ Function New-XMLDocument {
     }
 }
 
-Function ConvertFrom-PSBoundParameters {
+function ConvertFrom-PSBoundParameters {
     param (
         [Parameter(ValueFromPipeline)]$ValueFromPipeline
     )
     process {
         [pscustomobject]([ordered]@{}+$ValueFromPipeline)
     }
+}
+
+function Get-CurrentSecurityProtocol{
+    [System.Net.SecurityProtocolType]$SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
+    $SecurityProtocol
+}
+
+function Set-SecurityProtocol {
+    param (
+        [System.Net.SecurityProtocolType]$SecurityProtocol
+    )
+    [System.Net.ServicePointManager]::SecurityProtocol = $SecurityProtocol
+}
+
+function Get-CurrentCertificatePolicy {
+    [System.Net.ServicePointManager]::CertificatePolicy
+}
+
+function Set-CertificatePolicy {
+    param (
+        $CertificatePolicy
+    )
+    [System.Net.ServicePointManager]::CertificatePolicy = $CertificatePolicy
 }
