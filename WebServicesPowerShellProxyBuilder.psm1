@@ -198,3 +198,28 @@ function Set-CertificatePolicy {
 
     [System.Net.ServicePointManager]::CertificatePolicy = $CertificatePolicy
 }
+
+function ConvertFrom-HTTPLinkHeader {
+    param(
+        [Parameter(ValueFromPipeline)]$Link
+    )
+    process {
+        $Links = $Link | Split-String ", "
+
+        foreach ($HTTPLink in $Links) {
+            $LinkParts = $HTTPLink -split "; "
+        
+            [PSCustomObject]@{
+                Name = (Invoke-Expression "@{$($LinkParts[1])}")["rel"]
+                URL = $LinkParts[0].Trim("<>")
+            }
+        }
+    }
+}
+
+filter Split-String {
+    param (
+        $SplitParameter
+    )
+    $_ -split $SplitParameter
+}
