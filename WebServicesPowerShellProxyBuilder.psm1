@@ -152,10 +152,20 @@ function New-XMLDocument {
 
 function ConvertFrom-PSBoundParameters {
     param (
-        [Parameter(ValueFromPipeline)]$ValueFromPipeline
+        [Parameter(ValueFromPipeline)]$ValueFromPipeline,
+        $Property = "*", #Work arond for bug in Select-Object that doesn't support -ExcludeProperty without -Property
+        $ExcludeProperty,
+        [Switch]$AsHashTable
     )
-    process {
-        [pscustomobject]([ordered]@{}+$ValueFromPipeline)
+    process {        
+        $Object = [pscustomobject]([ordered]@{}+$ValueFromPipeline) |
+        Select-Object -Property $Property -ExcludeProperty $ExcludeProperty
+
+        if ($AsHashTable) {
+            $Object | ConvertTo-HashTable
+        } else {
+            $Object
+        }
     }
 }
 
