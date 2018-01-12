@@ -159,13 +159,16 @@ function ConvertFrom-PSBoundParameters {
     )
     process {        
         $Object = [pscustomobject]([ordered]@{}+$ValueFromPipeline) |
-        Select-Object -Property $Property -ExcludeProperty $ExcludeProperty
+        Select-Object -Property $Property -ExcludeProperty $ExcludeProperty |
+        Where-Object {$_.psobject.Properties.name -ne "*"} # There is a bug in PowerShell <v6 that returns a property named * when all the properites of the object are excluded
+        #https://github.com/PowerShell/PowerShell/issues/2351
 
         if ($AsHashTable) {
-            $Object | ConvertTo-HashTable
+            $Object | ConvertTo-HashTable -Ordered
         } else {
             $Object
         }
+
     }
 }
 
