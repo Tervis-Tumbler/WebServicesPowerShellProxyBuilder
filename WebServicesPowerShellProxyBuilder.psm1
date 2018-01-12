@@ -168,7 +168,6 @@ function ConvertFrom-PSBoundParameters {
         } else {
             $Object
         }
-
     }
 }
 
