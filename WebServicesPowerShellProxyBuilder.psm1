@@ -166,7 +166,7 @@ function ConvertFrom-PSBoundParameters {
         
         if ($PropertiesToInclude) {
             $Object = [pscustomobject]([ordered]@{}+$ValueFromPipeline) |
-            Select-Object @SelectObjectParameters |
+            Select-Object -Property $PropertiesToInclude -ExcludeProperty $ExcludeProperty |
             Where-Object {$_.psobject.Properties.name -ne "*"} # There is a bug in PowerShell <v6 that returns a property named * when all the properites of the object are excluded
             #https://github.com/PowerShell/PowerShell/issues/2351
         }
