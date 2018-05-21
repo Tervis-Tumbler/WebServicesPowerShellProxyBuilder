@@ -158,10 +158,10 @@ function ConvertFrom-PSBoundParameters {
         [Switch]$AsHashTable
     )
     process {
-        $PropertiesToInclude = if ($Property -ne "*") { 
-            $Property | Where-Object {$_ -in $ValueFromPipeline.Keys} 
-        } else {
+        $PropertiesToInclude = if ($Property -eq "*" -or $Property -contains "*") { 
             $Property
+        } else {
+            $Property | Where-Object {$_ -in $ValueFromPipeline.Keys} 
         }
         
         if ($PropertiesToInclude) {
