@@ -14,14 +14,12 @@
     }
 }
 
-
 function Set-WSRootAPIHostName {
     param (
         $RootAPIHostName
     )
     [Environment]::SetEnvironmentVariable( "$($PSModuleName)RootAPIHostName", $RootAPIURL, "User" )
 }
-
 
 function Get-WSRootAPIHostName {
     param (
@@ -30,7 +28,6 @@ function Get-WSRootAPIHostName {
     Invoke-Expression "`$env:$($PSModuleName)RootAPIHostName"
 }
 
-
 function Invoke-WSAPIfunction {
     param (
         $HttpMethod
@@ -38,7 +35,6 @@ function Invoke-WSAPIfunction {
     )
     
 }
-
 
 function ConvertTo-URLEncodedQueryStringParameterString {
     param (
@@ -68,7 +64,6 @@ function ConvertTo-URLEncodedQueryStringParameterString {
     }
 }
 
-
 function ConvertFrom-URLEncodedQueryStringParameterString {
     param (
         [Parameter(ValueFromPipeline)]$PipelineInput
@@ -86,7 +81,6 @@ function ConvertFrom-URLEncodedQueryStringParameterString {
         [PSCustomObject]$HashTable
     }
 }
-
 
 function New-XMLElement {
     [cmdletbinding(DefaultParameterSetName='InnerElements')]
@@ -124,7 +118,6 @@ function New-XMLElement {
     }
 }
 
-
 function New-XMLDocument {
     Param (
         [Parameter(Mandatory)][String]$Version,
@@ -147,38 +140,6 @@ function New-XMLDocument {
         $xml.OuterXml
     } else {
         $xml
-    }
-}
-
-function ConvertFrom-PSBoundParameters {
-    param (
-        [Parameter(ValueFromPipeline)]$ValueFromPipeline,
-        $Property = "*", #Work arond for bug in Select-Object that doesn't support -ExcludeProperty without -Property
-        $ExcludeProperty,
-        [Switch]$AsHashTable
-    )
-    process {
-        $PropertiesToInclude = if ($Property -eq "*" -or $Property -contains "*") { 
-            $Property
-        } else {
-            $Property | Where-Object {$_ -in $ValueFromPipeline.Keys} 
-        }
-        
-        if ($PropertiesToInclude) {
-            $Object = [pscustomobject]([ordered]@{}+$ValueFromPipeline) |
-            Select-Object -Property $PropertiesToInclude -ExcludeProperty $ExcludeProperty |
-            Where-Object {$_.psobject.Properties.name -ne "*"} # There is a bug in PowerShell <v6 that returns a property named * when all the properites of the object are excluded
-            #https://github.com/PowerShell/PowerShell/issues/2351
-            
-            #In cases where we get back a property named * along with other properties, remove * and leave the others
-            if ($Object) {$Object.PSObject.Properties.Remove("*")}
-        }
-
-        if ($AsHashTable) {
-            $Object | ConvertTo-HashTable -Ordered
-        } else {
-            $Object
-        }
     }
 }
 
@@ -238,11 +199,4 @@ function ConvertFrom-HTTPLinkHeader {
             }
         }
     }
-}
-
-filter Split-String {
-    param (
-        $SplitParameter
-    )
-    $_ -split $SplitParameter
 }
