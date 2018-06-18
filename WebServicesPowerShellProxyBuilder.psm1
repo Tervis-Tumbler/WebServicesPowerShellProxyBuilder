@@ -200,3 +200,36 @@ function ConvertFrom-HTTPLinkHeader {
         }
     }
 }
+
+function ConvertTo-HttpBasicAuthorizationHeaderValue {
+    [CmdletBinding(DefaultParameterSetName="OAuthAccessToken")]  
+    param (
+        [Parameter(Mandatory,ValueFromPipeline,ParameterSetName="Credential")]
+        [PSCredential]
+        $Credential,
+        
+        [Parameter(ParameterSetName="Credential")]
+        $Type,
+        
+        [Parameter(Mandatory,ValueFromPipelineByPropertyName,ParameterSetName="OAuthAccessToken")]
+        $Access_Token,
+        
+        [Parameter(ValueFromPipelineByPropertyName,ParameterSetName="OAuthAccessToken")]
+        $Token_Type
+    )
+    process {
+        $Value = if ($Credential) {
+            [System.Convert]::ToBase64String(
+                [System.Text.Encoding]::UTF8.GetBytes(
+                    $Credential.UserName + ":" + $Credential.GetNetworkCredential().password
+                )
+            )
+        } elseif ($Access_Token) {
+            $Access_Token
+        }
+
+        if ($Token_Type) { $Type = $Token_Type }
+
+        "$(if($Type){"$Type "})$Value"
+    }
+}
