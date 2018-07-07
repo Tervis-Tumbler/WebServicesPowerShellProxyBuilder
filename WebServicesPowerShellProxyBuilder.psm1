@@ -104,7 +104,10 @@ function New-XMLElement {
         $Element.InnerText = $InnerText
     }
 
-    if ($InnerElements) { 
+    if ($InnerElements) {
+        if ($InnerElements -is [scriptblock]) {
+            $InnerElements = & $InnerElements
+        }
         ForEach ($InnerElement in $InnerElements) {
             $Element.AppendChild($xml.ImportNode($InnerElement, $true)) | Out-Null
         }
@@ -120,16 +123,22 @@ function New-XMLElement {
 
 function New-XMLDocument {
     Param (
-        [Parameter(Mandatory)][String]$Version,
-        [Parameter(Mandatory)][String]$Encoding,
+        [String]$Version,
+        [String]$Encoding,
         $InnerElements,
         [Switch]$AsString
 
     )
     
     [xml]$xml=""
-    $xml.Insertbefore($xml.CreateXmlDeclaration($Version,$Encoding,""), $xml.DocumentElement ) | Out-Null
-    if ($InnerElements) { 
+    if ($Version -and $Encoding) {
+        $xml.Insertbefore($xml.CreateXmlDeclaration($Version,$Encoding,""), $xml.DocumentElement ) | Out-Null
+    }
+    
+    if ($InnerElements) {
+        if ($InnerElements -is [scriptblock]) {
+            $InnerElements = & $InnerElements
+        }
         ForEach ($InnerElement in $InnerElements) {
             $xml.AppendChild($xml.ImportNode($InnerElement, $true)) | Out-Null
         }
