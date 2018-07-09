@@ -121,6 +121,15 @@ function New-XMLElement {
     }
 }
 
+function New-XMLCDATA {
+    param (
+        [Parameter(Mandatory,ValueFromPipeline)][String]$Value
+    )
+    
+    [xml]$xml=""
+    $xml.CreateCDataSection($Value)
+}
+
 function New-XMLDocument {
     Param (
         [String]$Version,
