@@ -69,12 +69,12 @@ function ConvertFrom-URLEncodedQueryStringParameterString {
         [Parameter(ValueFromPipeline)]$PipelineInput
     )
     process {
-        $KeyValuePairs = $PipelineInput -split "&"
+        $KeyValuePairs = $PipelineInput -split "&" | Where-Object {$_}
         $HashTable = [Ordered]@{}
         ForEach ($KeyValuePair in $KeyValuePairs) {
-            $KeyAndValue = $KeyValuePair -split "="
+            $Key = $KeyValuePair -split "=" | Select-Object -First 1
             $HashTable.add(
-                [Uri]::UnescapeDataString($KeyAndValue[0]) , [Uri]::UnescapeDataString($KeyAndValue[1])
+                [Uri]::UnescapeDataString($Key) , [Uri]::UnescapeDataString($KeyValuePair.Replace("$Key=",""))
             )
         }
 
