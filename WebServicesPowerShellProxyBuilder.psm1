@@ -45,17 +45,19 @@ function ConvertTo-URLEncodedQueryStringParameterString {
         if ($PipelineInput.keys) {
             
             foreach ($Key in $PipelineInput.Keys) {
-                if ($URLEncodedQueryStringParameterString) {
-                    $URLEncodedQueryStringParameterString += "&"
+                if ($Key) {
+                    if ($URLEncodedQueryStringParameterString) {
+                        $URLEncodedQueryStringParameterString += "&"
+                    }
+                    
+                    $ParameterName = if ($MakeParameterNamesLowerCase) {
+                        $Key.ToLower()
+                    } else {
+                        $Key
+                    }
+    
+                    $URLEncodedQueryStringParameterString += "$([Uri]::EscapeDataString($ParameterName))=$([Uri]::EscapeDataString($PipelineInput[$Key]))"    
                 }
-                
-                $ParameterName = if ($MakeParameterNamesLowerCase) {
-                    $Key.ToLower()
-                } else {
-                    $Key
-                }
-
-                $URLEncodedQueryStringParameterString += "$([Uri]::EscapeDataString($ParameterName))=$([Uri]::EscapeDataString($PipelineInput[$Key]))"
             }
         }
     }
