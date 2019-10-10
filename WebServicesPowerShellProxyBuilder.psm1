@@ -102,7 +102,7 @@ function New-XMLElement {
         $Element.SetAttribute($Property.Name,$Property.Value) | Out-Null
     }
 
-    if ($InnerText) {
+    if ($InnerText -ne [System.Management.Automation.Internal.AutomationNull]::Value) {
         $Element.InnerText = $InnerText
     }
 
